@@ -17,11 +17,12 @@ package train;
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
  * @version 0.3
  */
-public class Train {
+public class Train implements Runnable {
 	private final String name;
-	private final Position pos;
+	private Position pos;
+	private Railway rail;
 
-	public Train(String name, Position p) throws BadPositionForTrainException {
+	public Train(String name, Position p, Railway rail) throws BadPositionForTrainException {
 		if (name == null || p == null)
 			throw new NullPointerException();
 
@@ -31,6 +32,7 @@ public class Train {
 
 		this.name = name;
 		this.pos = p.clone();
+		this.rail = rail;
 	}
 
 	@Override
@@ -43,5 +45,40 @@ public class Train {
 		return result.toString();
 	}
 
-	
+	public void move(){
+		Element[] elements = rail.getEl();
+		int index = -1;
+		for(int i=0; i<elements.length; i++) {
+			if(elements[i] == pos.getPos()) {
+				index = i;
+				break;
+			}
+		}
+		if(pos.getDirection() == Direction.LR) {
+			if(index == elements.length - 1) {
+				pos.setPos(elements[0]);
+				System.out.println("Train " + name + " completed a loop.");
+			} else {
+				pos.setPos(elements[index + 1]);
+				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
+			}
+		} else {
+			if(index != 0) {
+				pos.setPos(elements[index - 1]);
+				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
+			}
+		}
+	}
+
+	@Override
+	public void run() {
+		while(true) {
+			move();
+			try {
+				Thread.sleep(1500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

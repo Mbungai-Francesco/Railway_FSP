@@ -9,7 +9,7 @@ package train;
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
  */
 public class Railway {
-	private final Element[] elements;
+	private Element[] elements;
 
 	public Railway(Element[] elements) {
 		if(elements == null)
@@ -32,5 +32,9 @@ public class Railway {
 			result.append(e);
 		}
 		return result.toString();
+	}
+
+	public Element[] getEl() {
+		return elements;
 	}
 }
