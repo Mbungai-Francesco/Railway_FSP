@@ -20,7 +20,7 @@ package train;
  * @version 0.3
  */
 public class Position implements Cloneable {
-	private final Direction direction;
+	private Direction direction;
 	private Element pos;
 
 	public Position(Element elt, Direction d) {
@@ -59,5 +59,9 @@ public class Position implements Cloneable {
 
 	public Direction getDirection() {
 		return direction;
+	}
+
+	public void setDirection(Direction direction) {
+		this.direction = direction;
 	}
 }

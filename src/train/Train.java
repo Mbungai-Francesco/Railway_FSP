@@ -56,8 +56,8 @@ public class Train implements Runnable {
 		}
 		if(pos.getDirection() == Direction.LR) {
 			if(index == elements.length - 1) {
-				pos.setPos(elements[0]);
-				System.out.println("Train " + name + " completed a loop.");
+				pos.setDirection(Direction.RL);
+				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
 			} else {
 				pos.setPos(elements[index + 1]);
 				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
@@ -66,6 +66,9 @@ public class Train implements Runnable {
 			if(index != 0) {
 				pos.setPos(elements[index - 1]);
 				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
+			}else{
+				pos.setDirection(Direction.LR);
+				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
 			}
 		}
 	}
