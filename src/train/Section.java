@@ -8,7 +8,17 @@ package train;
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
  */
 public class Section extends Element {
+	private boolean isOccupied ;
 	public Section(String name) {
 		super(name);
+		this.isOccupied = false;
+	}
+
+	public boolean isOccupied() {
+		return isOccupied;
+	}
+
+	public void setOccupied(boolean isOccupied) {
+		this.isOccupied = isOccupied;
 	}
 }

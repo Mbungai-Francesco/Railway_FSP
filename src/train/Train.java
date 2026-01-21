@@ -27,7 +27,7 @@ public class Train implements Runnable {
 			throw new NullPointerException();
 
 		// A train should be first be in a station
-		if (!(p.getPos() instanceof Station))
+		if (!(p.getEle() instanceof Station))
 			throw new BadPositionForTrainException(name);
 
 		this.name = name;
@@ -46,31 +46,7 @@ public class Train implements Runnable {
 	}
 
 	public void move(){
-		Element[] elements = rail.getEl();
-		int index = -1;
-		for(int i=0; i<elements.length; i++) {
-			if(elements[i] == pos.getPos()) {
-				index = i;
-				break;
-			}
-		}
-		if(pos.getDirection() == Direction.LR) {
-			if(index == elements.length - 1) {
-				pos.setDirection(Direction.RL);
-				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
-			} else {
-				pos.setPos(elements[index + 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
-			}
-		} else {
-			if(index != 0) {
-				pos.setPos(elements[index - 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
-			}else{
-				pos.setDirection(Direction.LR);
-				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
-			}
-		}
+		rail.nextPos(pos, name);
 	}
 
 	@Override

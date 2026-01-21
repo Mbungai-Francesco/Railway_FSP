@@ -16,11 +16,13 @@ public class Main {
 		Position p = new Position(A, Direction.LR);
 		try {
 			Train t1 = new Train("1", p, r);
+			// Train t2 = new Train("2", p, r);
 			Thread t1Thread = new Thread(t1);
-			// Train t2 = new Train("2", p);
+			// Thread t2Thread = new Thread(t2);
 			// Train t3 = new Train("3", p);
 			System.out.println(t1);
 			t1Thread.start();
+			// t2Thread.start();
 			// System.out.println(t2);
 			// System.out.println(t3);
 		} catch (BadPositionForTrainException e) {
