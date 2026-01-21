@@ -68,15 +68,25 @@ public class Position implements Cloneable {
 	/**
 	 * Moves the train to the next position on the railway
 	 * @param railway the railway to move on
+	 * @param trainName the name of the train moving
 	 * @return a message describing the movement
 	 */
-	public String move(Railway railway) {
+	public String move(Railway railway, String trainName) {
 		if(railway.isAtBoundary(pos, direction)) {
+			// Release current element before changing direction
+			pos.release(trainName);
 			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+			// Re-occupy with new direction
+			pos.occupy(trainName, direction);
 			return "changed direction to " + direction;
 		} else {
+			Element nextElement = railway.getNextElement(pos, direction);
+			// Occupy next element before moving (will wait if occupied in opposite direction)
+			nextElement.occupy(trainName, direction);
+			// Release current element
+			pos.release(trainName);
 			Element previousPos = pos;
-			pos = railway.getNextElement(pos, direction);
+			pos = nextElement;
 			return "moved from " + previousPos.toString() + " to " + pos.toString();
 		}
 	}
