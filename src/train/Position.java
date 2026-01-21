@@ -72,21 +72,37 @@ public class Position implements Cloneable {
 	 * @return a message describing the movement
 	 */
 	public String move(Railway railway, String trainName) {
-		if(railway.isAtBoundary(pos, direction)) {
-			// Release current element before changing direction
-			pos.release(trainName);
-			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
-			// Re-occupy with new direction
-			pos.occupy(trainName, direction);
-			return "changed direction to " + direction;
-		} else {
+		// If currently at a station, we need to lock all sections before moving
+		if(pos instanceof Station) {
+			// Atomically check if we can lock all sections to the next station
+			while(!railway.checkAndLockAllSections(pos, direction, trainName)) {
+				try {
+					// Wait a bit before retrying
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+			// Now move to next element
 			Element nextElement = railway.getNextElement(pos, direction);
-			// Occupy next element before moving (will wait if occupied in opposite direction)
-			nextElement.occupy(trainName, direction);
-			// Release current element
-			pos.release(trainName);
 			Element previousPos = pos;
 			pos = nextElement;
+			return "moved from " + previousPos.toString() + " to " + pos.toString();
+		} else {
+			// Moving through a section (already locked)
+			Element nextElement = railway.getNextElement(pos, direction);
+			Element previousPos = pos;
+			pos = nextElement;
+			
+			// If we reached a station, release all sections and prepare to change direction
+			if(pos instanceof Station) {
+				railway.releaseAllSections(previousPos, direction, trainName);
+				// Release the railway directional lock since journey is complete
+				railway.releaseRailwayLock();
+				direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+				return "moved from " + previousPos.toString() + " to " + pos.toString() + " and changed direction to " + direction;
+			}
+			
 			return "moved from " + previousPos.toString() + " to " + pos.toString();
 		}
 	}

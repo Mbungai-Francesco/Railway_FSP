@@ -76,4 +76,15 @@ public abstract class Element {
 			}
 		}
 	}
+
+	/**
+	 * Checks if this element is free or occupied by the given train
+	 * @param trainName the name of the train to check
+	 * @return true if free or occupied by the same train, false if occupied by another train
+	 */
+	public boolean isFree(String trainName) {
+		synchronized(elementLock) {
+			return occupyingTrain == null || occupyingTrain.equals(trainName);
+		}
+	}
 }
