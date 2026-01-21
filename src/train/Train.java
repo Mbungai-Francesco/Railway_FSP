@@ -21,6 +21,7 @@ public class Train implements Runnable {
 	private final String name;
 	private Position pos;
 	private Railway rail;
+	private final Object posLock = new Object();
 
 	public Train(String name, Position p, Railway rail) throws BadPositionForTrainException {
 		if (name == null || p == null)
@@ -46,7 +47,10 @@ public class Train implements Runnable {
 	}
 
 	public void move(){
-		rail.nextPos(pos, name);
+		synchronized(posLock) {
+			String message = pos.move(rail);
+			System.out.println("Train " + name + " " + message);
+		}
 	}
 
 	@Override

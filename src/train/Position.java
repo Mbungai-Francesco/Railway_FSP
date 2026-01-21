@@ -21,13 +21,13 @@ package train;
  */
 public class Position implements Cloneable {
 	private Direction direction;
-	private Element ele;
+	private Element pos;
 
 	public Position(Element elt, Direction d) {
 		if (elt == null || d == null)
 			throw new NullPointerException();
 
-		this.ele = elt;
+		this.pos = elt;
 		this.direction = d;
 	}
 
@@ -42,19 +42,19 @@ public class Position implements Cloneable {
 	}
 
 	public Element getEle() {
-		return ele;
+		return pos;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder(this.ele.toString());
+		StringBuilder result = new StringBuilder(this.pos.toString());
 		result.append(" going ");
 		result.append(this.direction);
 		return result.toString();
 	}
 
-	public void setEle(Element ele) {
-		this.ele = ele;
+	public void setPos(Element pos) {
+		this.pos = pos;
 	}
 
 	public Direction getDirection() {
@@ -63,5 +63,21 @@ public class Position implements Cloneable {
 
 	public void setDirection(Direction direction) {
 		this.direction = direction;
+	}
+
+	/**
+	 * Moves the train to the next position on the railway
+	 * @param railway the railway to move on
+	 * @return a message describing the movement
+	 */
+	public String move(Railway railway) {
+		if(railway.isAtBoundary(pos, direction)) {
+			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+			return "changed direction to " + direction;
+		} else {
+			Element previousPos = pos;
+			pos = railway.getNextElement(pos, direction);
+			return "moved from " + previousPos.toString() + " to " + pos.toString();
+		}
 	}
 }

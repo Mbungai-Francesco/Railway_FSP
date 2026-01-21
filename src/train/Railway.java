@@ -38,35 +38,53 @@ public class Railway {
 		return elements;
 	}
 
-	public void nextPos(Position p, String name){
-		// Section[] sections = elements.
-		int index = -1;
-
-		// ! gets the current position of the train relative to the railway elements
-		for(int i=0; i<elements.length; i++) {
-			if(elements[i] == p.getEle()) {
-				index = i;
-				break;
+	/**
+	 * Finds the index of a given element in the railway
+	 * @param element the element to find
+	 * @return the index of the element, or -1 if not found
+	 */
+	public int indexOf(Element element) {
+		for(int i = 0; i < elements.length; i++) {
+			if(elements[i] == element) {
+				return i;
 			}
 		}
+		return -1;
+	}
 
-		// ! updates the position of the train based on its current direction
-		if(p.getDirection() == Direction.LR) {
-			if(index == elements.length - 1) {
-				p.setDirection(Direction.RL);
-				System.out.println("Train " + name + " changed direction to " + p.getDirection());
-			} else {
-				p.setEle(elements[index + 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + p.getEle().toString());
-			}
+	/**
+	 * Gets the next element based on current position and direction
+	 * @param current the current element
+	 * @param direction the direction of movement
+	 * @return the next element or null if at boundary
+	 */
+	public Element getNextElement(Element current, Direction direction) {
+		int index = indexOf(current);
+		if(index == -1) return null;
+		
+		if(direction == Direction.LR) {
+			if(index == elements.length - 1) return null;
+			return elements[index + 1];
 		} else {
-			if(index != 0) {
-				p.setEle(elements[index - 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + p.getEle().toString());
-			}else{
-				p.setDirection(Direction.LR);
-				System.out.println("Train " + name + " changed direction to " + p.getDirection());
-			}
+			if(index == 0) return null;
+			return elements[index - 1];
+		}
+	}
+
+	/**
+	 * Checks if the current element is at a boundary
+	 * @param current the current element
+	 * @param direction the direction of movement
+	 * @return true if at a boundary, false otherwise
+	 */
+	public boolean isAtBoundary(Element current, Direction direction) {
+		int index = indexOf(current);
+		if(index == -1) return false;
+		
+		if(direction == Direction.LR) {
+			return index == elements.length - 1;
+		} else {
+			return index == 0;
 		}
 	}
 }
