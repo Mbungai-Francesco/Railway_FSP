@@ -70,7 +70,7 @@ public class Position implements Cloneable {
 	 * @param railway the railway to move on
 	 * @return a message describing the movement
 	 */
-	public String move(Railway railway) {
+	public synchronized String move(Railway railway) {
 		if(railway.isAtBoundary(pos, direction)) {
 			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
 			return "changed direction to " + direction;
