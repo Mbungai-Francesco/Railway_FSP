@@ -64,4 +64,20 @@ public class Position implements Cloneable {
 	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
+
+	/**
+	 * Moves the train to the next position on the railway
+	 * @param railway the railway to move on
+	 * @return a message describing the movement
+	 */
+	public String move(Railway railway) {
+		if(railway.isAtBoundary(pos, direction)) {
+			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+			return "changed direction to " + direction;
+		} else {
+			Element previousPos = pos;
+			pos = railway.getNextElement(pos, direction);
+			return "moved from " + previousPos.toString() + " to " + pos.toString();
+		}
+	}
 }

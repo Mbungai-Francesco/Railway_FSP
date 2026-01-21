@@ -21,6 +21,7 @@ public class Train implements Runnable {
 	private final String name;
 	private Position pos;
 	private Railway rail;
+	private final Object posLock = new Object();
 
 	public Train(String name, Position p, Railway rail) throws BadPositionForTrainException {
 		if (name == null || p == null)
@@ -46,30 +47,9 @@ public class Train implements Runnable {
 	}
 
 	public void move(){
-		Element[] elements = rail.getEl();
-		int index = -1;
-		for(int i=0; i<elements.length; i++) {
-			if(elements[i] == pos.getPos()) {
-				index = i;
-				break;
-			}
-		}
-		if(pos.getDirection() == Direction.LR) {
-			if(index == elements.length - 1) {
-				pos.setDirection(Direction.RL);
-				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
-			} else {
-				pos.setPos(elements[index + 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
-			}
-		} else {
-			if(index != 0) {
-				pos.setPos(elements[index - 1]);
-				System.out.println("Train " + name + " moved from " + elements[index].toString() + " to " + pos.getPos().toString());
-			}else{
-				pos.setDirection(Direction.LR);
-				System.out.println("Train " + name + " changed direction to " + pos.getDirection());
-			}
+		synchronized(posLock) {
+			String message = pos.move(rail);
+			System.out.println("Train " + name + " " + message);
 		}
 	}
 
