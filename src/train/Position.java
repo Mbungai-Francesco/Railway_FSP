@@ -71,7 +71,7 @@ public class Position implements Cloneable {
 	 * @param trainName the name of the train moving
 	 * @return a message describing the movement
 	 */
-	public String move(Railway railway, String trainName) {
+	public synchronized String move(Railway railway, String trainName) {
 		if(railway.isAtBoundary(pos, direction)) {
 			// Release current element before changing direction
 			pos.release(trainName);
@@ -90,4 +90,6 @@ public class Position implements Cloneable {
 			return "moved from " + previousPos.toString() + " to " + pos.toString();
 		}
 	}
+
+	
 }
