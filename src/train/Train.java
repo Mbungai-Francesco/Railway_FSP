@@ -21,6 +21,7 @@ public class Train implements Runnable {
 	private final String name;
 	private Position pos;
 	private Railway rail;
+	private boolean turned = true;
 
 	public Train(String name, Position p, Railway rail) throws BadPositionForTrainException {
 		if (name == null || p == null)
@@ -33,8 +34,10 @@ public class Train implements Runnable {
 		this.name = name;
 		this.pos = p.clone();
 		this.rail = rail;
-		// Occupy initial position
-		this.pos.getEle().occupy(name, this.pos.getDirection());
+		
+		// Enter the initial station
+		Station station = (Station) this.pos.getEle();
+		station.enter(name);
 	}
 
 	@Override
@@ -47,9 +50,20 @@ public class Train implements Runnable {
 		return result.toString();
 	}
 
-	public void move(){
-		String message = pos.move(rail, name);
-		System.out.println("Train " + name + " " + message);
+	public void move() {
+		String action = pos.move(rail, name);
+		System.out.println("Train[" + name + "] " + action);
+	}
+
+	public void currentLocation(){
+		if(pos.getEle() instanceof Station && !turned) {
+			pos.reverseDirection();
+			turned = true;
+		}
+		else {
+			move();
+			turned = false;
+		}
 	}
 
 	@Override

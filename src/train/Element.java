@@ -39,43 +39,51 @@ public abstract class Element {
 		return this.name;
 	}
 
+	public synchronized void enter(String trainName) {
+		// To be implemented in subclasses
+	}
+
+	public synchronized void leave(String trainName) {
+		// To be implemented in subclasses
+	}
+
 	/**
 	 * Attempts to occupy this element with a train moving in a given direction.
 	 * Waits if the element is occupied by a train moving in the opposite direction.
 	 * @param trainName the name of the train trying to occupy this element
 	 * @param direction the direction the train is moving
 	 */
-	public void occupy(String trainName, Direction direction) {
-		synchronized(elementLock) {
-			// Wait if occupied by another train moving in a different direction
-			while(occupyingTrain != null && 
-				  !occupyingTrain.equals(trainName) && 
-				  occupyingDirection != direction) {
-				try {
-					elementLock.wait();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
-			// Now occupy the element
-			occupyingTrain = trainName;
-			occupyingDirection = direction;
-		}
-	}
+	// public void occupy(String trainName, Direction direction) {
+	// 	synchronized(elementLock) {
+	// 		// Wait if occupied by another train moving in a different direction
+	// 		while(occupyingTrain != null && 
+	// 			  !occupyingTrain.equals(trainName) && 
+	// 			  occupyingDirection != direction) {
+	// 			try {
+	// 				elementLock.wait();
+	// 			} catch (InterruptedException e) {
+	// 				Thread.currentThread().interrupt();
+	// 			}
+	// 		}
+	// 		// Now occupy the element
+	// 		occupyingTrain = trainName;
+	// 		occupyingDirection = direction;
+	// 	}
+	// }
 
 	/**
 	 * Releases the occupation of this element by a train.
 	 * @param trainName the name of the train releasing this element
 	 */
-	public void release(String trainName) {
-		synchronized(elementLock) {
-			if(occupyingTrain != null && occupyingTrain.equals(trainName)) {
-				occupyingTrain = null;
-				occupyingDirection = null;
-				elementLock.notifyAll();
-			}
-		}
-	}
+	// public void release(String trainName) {
+	// 	synchronized(elementLock) {
+	// 		if(occupyingTrain != null && occupyingTrain.equals(trainName)) {
+	// 			occupyingTrain = null;
+	// 			occupyingDirection = null;
+	// 			elementLock.notifyAll();
+	// 		}
+	// 	}
+	// }
 
 	/**
 	 * Checks if this element is free or occupied by the given train

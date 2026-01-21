@@ -65,45 +65,47 @@ public class Position implements Cloneable {
 		this.direction = direction;
 	}
 
+	public  String reverseDirection() {
+		if(this.direction == Direction.LR) {
+			this.direction = Direction.RL;
+		} else {
+			this.direction = Direction.LR;
+		}
+
+		return "reversed direction to " + this.direction;
+	}
+
 	/**
 	 * Moves the train to the next position on the railway
 	 * @param railway the railway to move on
 	 * @param trainName the name of the train moving
 	 * @return a message describing the movement
 	 */
-	public String move(Railway railway, String trainName) {
-		// If currently at a station, we need to lock all sections before moving
-		if(pos instanceof Station) {
-			// Atomically check if we can lock all sections to the next station
-			while(!railway.checkAndLockAllSections(pos, direction, trainName)) {
-				try {
-					// Wait a bit before retrying
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
-			// Now move to next element
-			Element nextElement = railway.getNextElement(pos, direction);
-			Element previousPos = pos;
-			pos = nextElement;
-			return "moved from " + previousPos.toString() + " to " + pos.toString();
-		} else {
-			// Moving through a section (already locked)
-			Element nextElement = railway.getNextElement(pos, direction);
-			Element previousPos = pos;
-			pos = nextElement;
+	public synchronized String move(Railway railway, String trainName) {
+		// Moving through a section (already locked)
+		Element nextElement = railway.getNextElement(pos, direction);
+		Element previousPos = pos;
+		pos = nextElement;
+		
+		nextElement.enter(trainName);
+		previousPos.leave(trainName);
+		// // If we reached a station, release all sections and prepare to change direction
+		// if(pos instanceof Station) {
+		// 	railway.releaseAllSections(previousPos, direction, trainName);
+		// 	// Release the railway directional lock since journey is complete
+		// 	railway.releaseRailwayLock();
+		// 	direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
 			
-			// If we reached a station, release all sections and prepare to change direction
-			if(pos instanceof Station) {
-				railway.releaseAllSections(previousPos, direction, trainName);
-				// Release the railway directional lock since journey is complete
-				railway.releaseRailwayLock();
-				direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
-				return "moved from " + previousPos.toString() + " to " + pos.toString() + " and changed direction to " + direction;
-			}
+		// 	// Give other trains a chance to acquire the railway lock
+		// 	try {
+		// 		Thread.sleep(100);
+		// 	} catch (InterruptedException e) {
+		// 		Thread.currentThread().interrupt();
+		// 	}
 			
-			return "moved from " + previousPos.toString() + " to " + pos.toString();
-		}
+		// 	return "moved from " + previousPos.toString() + " to " + pos.toString() + " and changed direction to " + direction;
+		// }
+		
+		return "moved from " + previousPos.toString() + " to " + pos.toString();
 	}
 }

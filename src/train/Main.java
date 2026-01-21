@@ -14,7 +14,7 @@ public class Main {
 		System.out.println("The railway is:");
 		System.out.println("\t" + r);
 		Position p = new Position(A, Direction.LR);
-		Position p2 = new Position(D, Direction.RL);
+		Position p2 = new Position(A, Direction.LR);
 		try {
 			Train t1 = new Train("1", p, r);
 			// Train t2 = new Train("2", p, r);
