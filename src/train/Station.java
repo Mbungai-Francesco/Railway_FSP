@@ -20,14 +20,13 @@ public class Station extends Element {
 	}
 
 	/**
-	 * A train enters the station
+	 * A train enters the station for the first time
 	 * Waits if the station is full (trainsInside >= size)
-	 * @param trainName the name of the train
+	 * @param train the train object
 	 */
-	@Override
-	public synchronized void enter(String trainName) {
+	public synchronized void getOnStation(Train train) {
 		// Wait while station is full
-		while(trainsInside >= size) {
+		while( trainsInside >= size ) {
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
@@ -39,12 +38,44 @@ public class Station extends Element {
 	}
 
 	/**
-	 * A train leaves the station
-	 * @param trainName the name of the train
+	 * A train enters the station
+	 * Waits if the station is full (trainsInside >= size)
+	 * @param train the train object
 	 */
 	@Override
-	public synchronized void leave(String trainName) {
+	public synchronized void enter(Train train) {
+		// Wait while station is full
+		while( trainsInside >= size ) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		// Now enter the station
+		railway.removeTrainMoving(train);
+		trainsInside++;
+	}
+
+	/**
+	 * A train leaves the station
+	 * @param train the train object
+	 */
+	@Override
+	public synchronized void leave(Train train) {
+		int num = railway.getTrainCount(); // Get the current number of trains on the railway and add 1 for the incoming train
+
+		System.out.println("Train " + train + " is trying to leave station " + this + ". Trains on railway: " + num);
+		while (num > 0 && !train.sameDirection()) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 		trainsInside--;
+		railway.setCurrentDirection(train.getDirection());
+		railway.addTrainMoving(train);
 		this.notifyAll();
 	}
 

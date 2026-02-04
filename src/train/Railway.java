@@ -1,5 +1,6 @@
 package train;
 
+import java.util.Optional;
 
 /**
  * Représentation d'un circuit constitué d'éléments de voie ferrée : gare ou
@@ -12,15 +13,19 @@ public class Railway {
 	private Element[] elements;
 	private final Object railwayLock = new Object();
 	private Direction currentDirection = null;
-	private int trainsMoving = 0;
+	private java.util.Set<Train> trainsMoving = new java.util.HashSet<>();
 
-	public Railway(Element[] elements) {
+	public Railway(Element[] elements, Direction initialDirection) {
 		if(elements == null)
+			throw new NullPointerException();
+		if(initialDirection == null)
 			throw new NullPointerException();
 		
 		this.elements = elements;
 		for (Element e : elements)
 			e.setRailway(this);
+
+		this.currentDirection = initialDirection;
 	}
 
 	@Override
@@ -90,6 +95,50 @@ public class Railway {
 			return index == 0;
 		}
 	}
+
+	public Element[] getElements() {
+		return elements;
+	}
+
+	public Direction getCurrentDirection() {
+		return currentDirection;
+	}
+
+	public void setCurrentDirection(Direction currentDirection) {
+		this.currentDirection = currentDirection;
+	}
+
+	public java.util.Set<Train> getTrainsMoving() {
+		return trainsMoving;
+	}
+
+	public int getTrainCount() {
+		return trainsMoving.size();
+	}
+
+	public void addTrainMoving(Train train) {
+		trainsMoving.add(train);
+	}
+
+	public void removeTrainMoving(Train train) {
+		trainsMoving.remove(train);
+
+		if(getTrainCount() == 0) reverseDirection();
+	}
+
+	public  String reverseDirection() {
+		if(this.currentDirection == Direction.LR) {
+			this.currentDirection = Direction.RL;
+		} else {
+			this.currentDirection = Direction.LR;
+		}
+
+		return "Rail direction reversed  to " + this.currentDirection;
+	}
+
+	
+
+	
 }
 
 // 	/**

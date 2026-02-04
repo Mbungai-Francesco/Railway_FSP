@@ -78,18 +78,18 @@ public class Position implements Cloneable {
 	/**
 	 * Moves the train to the next position on the railway
 	 * @param railway the railway to move on
-	 * @param trainName the name of the train moving
+	 * @param train the train object moving
 	 * @return a message describing the movement
 	 */
-	public synchronized String move(Railway railway, String trainName) {
+	public synchronized String move(Railway railway, Train train) {
 
 		// Moving through a section (already locked)
 		Element nextElement = railway.getNextElement(pos, direction);
 		Element previousPos = pos;
 		pos = nextElement;
 		
-		nextElement.enter(trainName);
-		previousPos.leave(trainName);
+		nextElement.enter(train);
+		previousPos.leave(train);
 		// // If we reached a station, release all sections and prepare to change direction
 		// if(pos instanceof Station) {
 		// 	railway.releaseAllSections(previousPos, direction, trainName);

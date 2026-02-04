@@ -39,11 +39,11 @@ public abstract class Element {
 		return this.name;
 	}
 
-	public synchronized void enter(String trainName) {
+	public synchronized void enter(Train trainName) {
 		// To be implemented in subclasses
 	}
 
-	public synchronized void leave(String trainName) {
+	public synchronized void leave(Train trainName) {
 		// To be implemented in subclasses
 	}
 

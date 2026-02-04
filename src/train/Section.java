@@ -8,7 +8,7 @@ package train;
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
  */
 public class Section extends Element {
-	private String occupyingTrain = null;
+	private Train occupyingTrain = null;
 
 	public Section(String name) {
 		super(name);
@@ -17,12 +17,12 @@ public class Section extends Element {
 	/**
 	 * A train enters the section (max 1 train per section)
 	 * Waits if the section is already occupied
-	 * @param trainName the name of the train
+	 * @param train the train object
 	 */
 	@Override
-	public synchronized void enter(String trainName) {
+	public synchronized void enter(Train train) {
 		// Wait while section is occupied
-		while(occupyingTrain != null) {
+		while(occupyingTrain != null || !train.sameDirection()) {
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
@@ -30,16 +30,16 @@ public class Section extends Element {
 			}
 		}
 		// Now occupy the section
-		occupyingTrain = trainName;
+		occupyingTrain = train;
 	}
 
 	/**
 	 * A train leaves the section
-	 * @param trainName the name of the train
+	 * @param train the train object
 	 */
 	@Override
-	public synchronized void leave(String trainName) {
-		if(occupyingTrain != null && occupyingTrain.equals(trainName)) {
+	public synchronized void leave(Train train) {
+		if(occupyingTrain != null && occupyingTrain.equals(train)) {
 			occupyingTrain = null;
 			this.notifyAll();
 		}

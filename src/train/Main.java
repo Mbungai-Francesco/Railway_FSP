@@ -10,11 +10,16 @@ public class Main {
 		Section AB = new Section("AB");
 		Section BC = new Section("BC");
 		Section CD = new Section("CD");
-		Railway r = new Railway(new Element[] { A, AB, BC, CD, D });
+		Railway r = new Railway(new Element[] { A, AB, BC, CD, D }, Direction.LR);
 		System.out.println("The railway is:");
 		System.out.println("\t" + r);
 		Position p = new Position(A, Direction.LR);
-		Position p2 = new Position(A, Direction.LR);
+		Position p2 = new Position(D, Direction.RL);
+
+		for(Element ele : r.getElements()) {
+			ele.setRailway(r);
+		}
+
 		try {
 			Train t1 = new Train("1", p, r);
 			// Train t2 = new Train("2", p, r);
