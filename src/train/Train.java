@@ -1,19 +1,14 @@
 package train;
 
 /**
- * Représentation d'un train. Un train est caractérisé par deux valeurs :
+ * Representation of a train. A train is characterized by:
  * <ol>
- *   <li>
- *     Son nom pour l'affichage.
- *   </li>
- *   <li>
- *     La position qu'il occupe dans le circuit (un élément avec une direction) : classe {@link Position}.
- *   </li>
+ *   <li>Its name for display purposes</li>
+ *   <li>The position it occupies in the circuit (an element with a direction): {@link Position}</li>
  * </ol>
  * 
  * @author Fabien Dagnat <fabien.dagnat@imt-atlantique.fr>
- * @author Mayte segarra <mt.segarra@imt-atlantique.fr>
- * Test if the first element of a train is a station
+ * @author Mayte Segarra <mt.segarra@imt-atlantique.fr>
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
  * @version 0.3
  */
@@ -27,7 +22,7 @@ public class Train implements Runnable {
 		if (name == null || p == null)
 			throw new NullPointerException();
 
-		// A train should be first be in a station
+		// A train must initially be in a station
 		if (!(p.getEle() instanceof Station))
 			throw new BadPositionForTrainException(name);
 
@@ -50,11 +45,18 @@ public class Train implements Runnable {
 		return result.toString();
 	}
 
+	/**
+	 * Moves the train to the next position
+	 */
 	public void move() {
-		String action = pos.move(rail, name);
-		System.out.println("Train[" + name + "] " + action);
+		pos.move(rail, name);
 	}
 
+	/**
+	 * Handles the train's current location logic
+	 * If at a station and not yet turned, reverse direction
+	 * Otherwise, move to the next element
+	 */
 	public void currentLocation(){
 		if(pos.getEle() instanceof Station && !turned) {
 			pos.reverseDirection();
@@ -66,6 +68,10 @@ public class Train implements Runnable {
 		}
 	}
 
+	/**
+	 * Main execution loop for the train thread
+	 * Continuously moves the train with a 1.5 second delay between movements
+	 */
 	@Override
 	public void run() {
 		while(true) {

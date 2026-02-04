@@ -1,22 +1,22 @@
 package train;
 
 /**
- * Représentation de la position d'un train dans le circuit. Une position
- * est caractérisée par deux valeurs :
+ * Representation of a train's position in the railway circuit.
+ * A position is characterized by two values:
  * <ol>
  *   <li>
- *     L'élément où se positionne le train : une gare (classe  {@link Station})
- *     ou une section de voie ferrée (classe {@link Section}).
+ *     The element where the train is positioned: a station ({@link Station})
+ *     or a railway section ({@link Section}).
  *   </li>
  *   <li>
- *     La direction qu'il prend (enumération {@link Direction}) : de gauche à
- *     droite ou de droite à gauche.
+ *     The direction it is taking ({@link Direction}): from left to right
+ *     or from right to left.
  *   </li>
  * </ol>
- * @author Fabien Dagnat <fabien.dagnat@imt-atlantique.fr> Modifié par Mayte
- *         Segarra 
+ * 
+ * @author Fabien Dagnat <fabien.dagnat@imt-atlantique.fr>
+ * @author Mayte Segarra
  * @author Philippe Tanguy <philippe.tanguy@imt-atlantique.fr>
- *         
  * @version 0.3
  */
 public class Position implements Cloneable {
@@ -65,50 +65,77 @@ public class Position implements Cloneable {
 		this.direction = direction;
 	}
 
-	public  String reverseDirection() {
+	public String reverseDirection() {
 		if(this.direction == Direction.LR) {
 			this.direction = Direction.RL;
 		} else {
 			this.direction = Direction.LR;
 		}
-
 		return "reversed direction to " + this.direction;
 	}
 
 	/**
-	 * Moves the train to the next position on the railway
+	 * Moves the train to the next position on the railway.
+	 * 
+	 * Q3.4 & Q3.5: Implements railway locking mechanism to:
+	 * - Prevent trains from leaving stations when another train is moving
+	 * - Ensure only one train moves at a time (guarantees max 1 train per section)
+	 * - Avoid deadlocks by acquiring lock before leaving station and releasing upon arrival
+	 * 
 	 * @param railway the railway to move on
 	 * @param trainName the name of the train moving
 	 * @return a message describing the movement
 	 */
 	public synchronized String move(Railway railway, String trainName) {
-
-		// Moving through a section (already locked)
+		// Get next element in the current direction
 		Element nextElement = railway.getNextElement(pos, direction);
 		Element previousPos = pos;
+		
+		// Check if we can move (boundary check)
+		if(nextElement == null) {
+			return "cannot move, at boundary";
+		}
+		
+		// Q3.4: If leaving a station, acquire railway lock first
+		// This prevents other trains from leaving stations while this train is moving
+		if(previousPos instanceof Station && nextElement instanceof Section) {
+			if(!railway.acquireRailwayLock(direction)) {
+				return "cannot acquire railway lock";
+			}
+		}
+		
+		// Enter the next element
+		if(nextElement instanceof Section) {
+			// Use direction-aware entry for sections
+			((Section)nextElement).enter(trainName, direction);
+		} else {
+			// For stations, use basic entry
+			nextElement.enter(trainName);
+		}
+		
+		// Leave the previous element
+		previousPos.leave(trainName);
 		pos = nextElement;
 		
-		nextElement.enter(trainName);
-		previousPos.leave(trainName);
-		// // If we reached a station, release all sections and prepare to change direction
-		// if(pos instanceof Station) {
-		// 	railway.releaseAllSections(previousPos, direction, trainName);
-		// 	// Release the railway directional lock since journey is complete
-		// 	railway.releaseRailwayLock();
-		// 	direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
-			
-		// 	// Give other trains a chance to acquire the railway lock
-		// 	try {
-		// 		Thread.sleep(100);
-		// 	} catch (InterruptedException e) {
-		// 		Thread.currentThread().interrupt();
-		// 	}
-			
-		// 	return "moved from " + previousPos.toString() + " to " + pos.toString() + " and changed direction to " + direction;
-		// }
+		// Build status message
+		String message;
+		if(nextElement instanceof Station) {
+			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+			message = "moved from " + previousPos.toString() + " to " + nextElement.toString() 
+			          + " and changed direction to " + direction;
+		} else {
+			message = "moved from " + previousPos.toString() + " to " + nextElement.toString();
+		}
 		
-		return "moved from " + previousPos.toString() + " to " + pos.toString();
+		// Print message BEFORE releasing lock to ensure correct message ordering
+		System.out.println("Train[" + trainName + "] " + message);
+		
+		// Q3.5: Release railway lock when arriving at a station
+		// This allows other trains to start moving
+		if(nextElement instanceof Station) {
+			railway.releaseRailwayLock();
+		}
+		
+		return message;
 	}
-
-	
 }
