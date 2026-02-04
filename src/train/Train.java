@@ -69,7 +69,7 @@ public class Train implements Runnable {
 	@Override
 	public void run() {
 		while(true) {
-			move();
+			currentLocation();
 			try {
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
