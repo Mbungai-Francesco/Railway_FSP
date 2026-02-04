@@ -65,6 +65,16 @@ public class Position implements Cloneable {
 		this.direction = direction;
 	}
 
+	public  String reverseDirection() {
+		if(this.direction == Direction.LR) {
+			this.direction = Direction.RL;
+		} else {
+			this.direction = Direction.LR;
+		}
+
+		return "reversed direction to " + this.direction;
+	}
+
 	/**
 	 * Moves the train to the next position on the railway
 	 * @param railway the railway to move on
@@ -72,23 +82,32 @@ public class Position implements Cloneable {
 	 * @return a message describing the movement
 	 */
 	public synchronized String move(Railway railway, String trainName) {
-		if(railway.isAtBoundary(pos, direction)) {
-			// Release current element before changing direction
-			pos.release(trainName);
-			direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
-			// Re-occupy with new direction
-			pos.occupy(trainName, direction);
-			return "changed direction to " + direction;
-		} else {
-			Element nextElement = railway.getNextElement(pos, direction);
-			// Occupy next element before moving (will wait if occupied in opposite direction)
-			nextElement.occupy(trainName, direction);
-			// Release current element
-			pos.release(trainName);
-			Element previousPos = pos;
-			pos = nextElement;
-			return "moved from " + previousPos.toString() + " to " + pos.toString();
-		}
+
+		// Moving through a section (already locked)
+		Element nextElement = railway.getNextElement(pos, direction);
+		Element previousPos = pos;
+		pos = nextElement;
+		
+		nextElement.enter(trainName);
+		previousPos.leave(trainName);
+		// // If we reached a station, release all sections and prepare to change direction
+		// if(pos instanceof Station) {
+		// 	railway.releaseAllSections(previousPos, direction, trainName);
+		// 	// Release the railway directional lock since journey is complete
+		// 	railway.releaseRailwayLock();
+		// 	direction = (direction == Direction.LR) ? Direction.RL : Direction.LR;
+			
+		// 	// Give other trains a chance to acquire the railway lock
+		// 	try {
+		// 		Thread.sleep(100);
+		// 	} catch (InterruptedException e) {
+		// 		Thread.currentThread().interrupt();
+		// 	}
+			
+		// 	return "moved from " + previousPos.toString() + " to " + pos.toString() + " and changed direction to " + direction;
+		// }
+		
+		return "moved from " + previousPos.toString() + " to " + pos.toString();
 	}
 
 	
