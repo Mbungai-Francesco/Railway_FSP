@@ -1,5 +1,9 @@
 # Railway Train Simulation - Concurrent Programming (TP11-15)
 
+# AUTHORS :
+- **Mbungai Francesco** 
+- **Gharsalli Hanine**
+
 ## Objectives
 
 This project demonstrates:
@@ -44,6 +48,8 @@ This simulation models a railway system with trains moving on a single track. Th
 Added to Position class:
 - Method `move(Railway railway, String trainName)`: Moves the train to the next position
 
+![Diagramme de classes](class_diag_1_2.png)
+
 ### Question 1.3: Code for Identified Methods
 
 See implementation in `Position.java`, method `move()`.
@@ -51,6 +57,14 @@ See implementation in `Position.java`, method `move()`.
 ---
 
 ## Exercise 2: Multiple Trains on the Line
+
+### Safety Conditions
+
+This exercise enforces the following **safety conditions**:
+
+1.A station can contain at most as many trains as it has platforms (quays)
+   
+2.A section can contain at most one train at any given time
 
 ### Question 2.1: Multiple Active Trains
 
@@ -250,7 +264,8 @@ Successfully tested with:
 - No race conditions
 - Correct section occupancy (always ≤ 1 train per section)
 
----
+## Final class diagram
+![Diagramme de classes](class_diag_fin.png)
 
 ## How to Run
 
