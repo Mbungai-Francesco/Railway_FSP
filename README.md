@@ -48,7 +48,7 @@ This simulation models a railway system with trains moving on a single track. Th
 Added to Position class:
 - Method `move(Railway railway, String trainName)`: Moves the train to the next position
 
-![Diagramme de classes](class_diag_1_2.png)
+![class diagram](class_diag_1_2.png)
 
 ### Question 1.3: Code for Identified Methods
 
@@ -265,7 +265,7 @@ Successfully tested with:
 - Correct section occupancy (always ≤ 1 train per section)
 
 ## Final class diagram
-![Diagramme de classes](class_diag_fin.png)
+![Final class diagram](class_diag_fin.png)
 
 ## How to Run
 
